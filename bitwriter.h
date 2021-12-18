@@ -1,13 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#ifndef HNT_INC
 #include "../HNtree/HNtree.h"
+#endif
 
 #define BYTE_SZ 8
 
 typedef struct BW{
-  FILE* stream
-  unsiged char buffer;
+  FILE* stream;
+  unsigned char buffer;
   int remain;   // 7654 3210
 } BW;
 

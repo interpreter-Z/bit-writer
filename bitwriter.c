@@ -3,7 +3,7 @@
 //creates pointer to a new BW with filestream (write mode) specified by fn
 BW* bw_open(char* fn){
   //open file
-  strm = fopen(fn, "w");
+  FILE* strm = fopen(fn, "w");
   if(strm == NULL){
     fprintf(stderr, "bw_open(): failed to open file: %s", fn);
     return NULL;
@@ -17,7 +17,7 @@ BW* bw_open(char* fn){
 }
 
 void bw_close(BW* bw){
-  flushbuf(bw);
+  writebuf(bw);
   fclose(bw->stream);
   free(bw);
 }
@@ -27,7 +27,7 @@ void writebuf(BW* bw){
   if(bw->remain == BYTE_SZ)
     return;
   //pad buffer with 0s
-  while(bw->remain > 0){}
+  while(bw->remain > 0){
     bw->buffer = (bw->buffer << 1) & 0xfe;
     bw->remain--;
   }
@@ -49,8 +49,8 @@ void writebit(BW* bw, bool bi){
 }
 
 void writebyte(BW* bw, unsigned char by){
-  for(int i=BYTE_SZ-1; i>=0; i++)
-    writebit(bw, buffer & (0x1<<i));
+  for(int i=BYTE_SZ-1; i>=0; i--)
+    writebit(bw, bw->buffer & (0x1<<i));
 }
 
 //print HuffNodeTree "hnt" to stream in pre-order
