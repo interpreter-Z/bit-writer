@@ -12,7 +12,7 @@ BW* bw_open(char* fn){
   BW* bw = malloc(sizeof(BW));
   bw->stream = strm;
   bw->buffer = 0x0;
-  bw->remain = BYTE_SZ - 1;
+  bw->remain = BYTE_SZ;
   return bw;
 }
 
@@ -32,25 +32,30 @@ void writebuf(BW* bw){
     bw->remain--;
   }
   //write buffer to file & reset buffer
-  fprintf(bw->stream, "%c", bw->buffer);
+  //fprintf(bw->stream, "%c", bw->buffer);
+  fwrite(&(bw->buffer), sizeof(bw->buffer), 1, bw->stream);
   bw->buffer = 0x0;
   bw->remain = BYTE_SZ;
 }
 
 void writebit(BW* bw, bool bi){
-  if(bi)
-    bw->buffer = (bw->buffer << 1) | 0x1;
-  else
-    bw->buffer = (bw->buffer << 1) & 0xfe;
-  bw->remain--;
-
   if(bw->remain == 0)
     writebuf(bw);
+
+  if(bi){
+    bw->buffer = (bw->buffer << 1) | 0x1;
+  }
+  else{
+    bw->buffer = (bw->buffer << 1) & 0xfe;
+  }
+
+  bw->remain--;
+
 }
 
 void writebyte(BW* bw, unsigned char by){
   for(int i=BYTE_SZ-1; i>=0; i--)
-    writebit(bw, bw->buffer & (0x1<<i));
+    writebit(bw, by & (0x1<<i));
 }
 
 //print HuffNodeTree "hnt" to stream in pre-order
